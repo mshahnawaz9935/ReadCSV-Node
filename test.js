@@ -9,21 +9,20 @@ var inputFile='dataset.csv';
 var parser = parse({delimiter: ','}, function (err, data) {
 
   async.eachSeries(data, function (line, callback) {
-  //  console.log(line);
-    latitude.push(line[0]);longitude.push(line[1]);timestamp.push(line[2]);
+    latitude.push(line[0]);longitude.push(line[1]);timestamp.push(line[2]);  // Store the data into arrays
     callback();
     x++;
   })
   storedata(latitude,longitude,timestamp);
 });
 fs.createReadStream(inputFile).pipe(parser);
-function storedata(data1,data2,data3)
+function storedata(data1,data2,data3)    // Obtain the data and write to file
 {
     var prev=0,next=prev+1;
     var length = data1.length;
-      var writer = csvWriter({sendHeaders: false,flags:'r+'});
+      var writer = csvWriter({sendHeaders: false,flags:'r+'});  
            writer.pipe(fs.createWriteStream('output.csv'))
-    for(var i=0;i< length;i++)
+    for(var i=0;i< length;i++)  // Iterate through the dataset
     {
       if(next==length-1)
       continue;
@@ -32,12 +31,12 @@ function storedata(data1,data2,data3)
        var speed = dist/time;
        prev++;
        next++;
-       if((speed == 0)||(speed >100)||(speed <11 && time*3600 > 4))
+       if((speed == 0)||(speed >100)||(speed <11 && time*3600 > 4))  //Disregard and skip to the next index
        {
          next=next+1;
          continue;
        }
-       if(next-prev > 1)
+       if(next-prev > 1)   // Reset the counters
        {
        prev=next;
        next=next +1;
@@ -45,12 +44,12 @@ function storedata(data1,data2,data3)
        
        console.log('time', time*3600 ,'speed', speed , " ", i , next, prev );
        // writer.write({lat: data1[prev], long: data2[prev], time: data3[prev]})
-        writer.write({lat: data1[prev], long: data2[prev], timestamp: data3[prev] ,speed: speed,time:time*3600 })
+        writer.write({lat: data1[prev], long: data2[prev], timestamp: data3[prev] ,speed: speed,time:time*3600 }) //write to file
         
     }
     writer.end()
 }
- function distance(latitude1, longitude1,latitude2, longitude2) 
+ function distance(latitude1, longitude1,latitude2, longitude2)   //Calculate distance
     {
       var Radius_of_earth = 6371; // km
       var diff_latitude = Radians(latitude2-latitude1);
